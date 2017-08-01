@@ -93,6 +93,14 @@ func (i *Instances) AddSSHKeyToAllInstances(user string, keyData []byte) error {
 	return errors.New("unimplemented")
 }
 
+func (i *Instances) NodeRegistered(node *v1.Node) {
+
+}
+
+func (i *Instances) NodeUnregistered(node *v1.Node) {
+
+}
+
 func (i *Instances) NodeAddresses(name types.NodeName) ([]v1.NodeAddress, error) {
 	glog.V(4).Infof("NodeAddresses(%v) called", name)
 

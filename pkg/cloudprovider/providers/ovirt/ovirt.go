@@ -154,6 +154,14 @@ func (v *OVirtCloud) Routes() (cloudprovider.Routes, bool) {
 	return nil, false
 }
 
+func (v *OVirtCloud) NodeRegistered(node *v1.Node) {
+
+}
+
+func (v *OVirtCloud) NodeUnregistered(node *v1.Node) {
+
+}
+
 // NodeAddresses returns the NodeAddresses of the instance with the specified nodeName.
 func (v *OVirtCloud) NodeAddresses(nodeName types.NodeName) ([]v1.NodeAddress, error) {
 	name := mapNodeNameToInstanceName(nodeName)

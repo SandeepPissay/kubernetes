@@ -956,6 +956,14 @@ func (c *Cloud) Routes() (cloudprovider.Routes, bool) {
 	return c, true
 }
 
+func (c *Cloud) NodeRegistered(node *v1.Node) {
+
+}
+
+func (c *Cloud) NodeUnregistered(node *v1.Node) {
+
+}
+
 // NodeAddresses is an implementation of Instances.NodeAddresses.
 func (c *Cloud) NodeAddresses(name types.NodeName) ([]v1.NodeAddress, error) {
 	if c.selfAWSInstance.nodeName == name || len(name) == 0 {

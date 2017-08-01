@@ -53,12 +53,14 @@ func GetVSphere() (*VSphere, error) {
 		return nil, err
 	}
 	vSphereConn.GoVmomiClient = client
-	vs := &VSphere{
+	vsi := &VSphereInstance{
 		conn:            vSphereConn,
 		cfg:             cfg,
 		localInstanceID: "",
 	}
-	runtime.SetFinalizer(vs, logout)
+	runtime.SetFinalizer(vsi, logout)
+	vs := &VSphere{	}
+	vs.vsiArr = append(vs.vsiArr, *vsi)
 	return vs, nil
 }
 
@@ -241,7 +243,7 @@ func getPbmCompatibleDatastore(ctx context.Context, client *vim25.Client, storag
 
 func (vs *VSphere) setVMOptions(ctx context.Context, dc *vclib.Datacenter) (*vclib.VMOptions, error) {
 	var vmOptions vclib.VMOptions
-	vm, err := dc.GetVMByPath(ctx, vs.cfg.Global.WorkingDir+"/"+vs.localInstanceID)
+	vm, err := dc.GetVMByPath(ctx, vs.vsiArr[0].cfg.Global.WorkingDir+"/"+vs.vsiArr[0].localInstanceID)
 	if err != nil {
 		return nil, err
 	}
@@ -249,7 +251,7 @@ func (vs *VSphere) setVMOptions(ctx context.Context, dc *vclib.Datacenter) (*vcl
 	if err != nil {
 		return nil, err
 	}
-	folder, err := dc.GetFolderByPath(ctx, vs.cfg.Global.WorkingDir)
+	folder, err := dc.GetFolderByPath(ctx, vs.vsiArr[0].cfg.Global.WorkingDir)
 	if err != nil {
 		return nil, err
 	}
@@ -266,27 +268,27 @@ func (vs *VSphere) cleanUpDummyVMs(dummyVMPrefix string) {
 	for {
 		time.Sleep(CleanUpDummyVMRoutineInterval * time.Minute)
 		// Ensure client is logged in and session is valid
-		err := vs.conn.Connect(ctx)
+		err := vs.vsiArr[0].conn.Connect(ctx)
 		if err != nil {
 			glog.V(4).Infof("Failed to connect to VC with err: %+v. Retrying again...", err)
 			continue
 		}
-		dc, err := vclib.GetDatacenter(ctx, vs.conn, vs.cfg.Global.Datacenter)
+		dc, err := vclib.GetDatacenter(ctx, vs.vsiArr[0].conn, vs.vsiArr[0].cfg.Global.Datacenter)
 		if err != nil {
-			glog.V(4).Infof("Failed to get the datacenter: %s from VC. err: %+v", vs.cfg.Global.Datacenter, err)
+			glog.V(4).Infof("Failed to get the datacenter: %s from VC. err: %+v", vs.vsiArr[0].cfg.Global.Datacenter, err)
 			continue
 		}
 		// Get the folder reference for global working directory where the dummy VM needs to be created.
-		vmFolder, err := dc.GetFolderByPath(ctx, vs.cfg.Global.WorkingDir)
+		vmFolder, err := dc.GetFolderByPath(ctx, vs.vsiArr[0].cfg.Global.WorkingDir)
 		if err != nil {
-			glog.V(4).Infof("Unable to get the kubernetes folder: %q reference. err: %+v", vs.cfg.Global.WorkingDir, err)
+			glog.V(4).Infof("Unable to get the kubernetes folder: %q reference. err: %+v", vs.vsiArr[0].cfg.Global.WorkingDir, err)
 			continue
 		}
 		// A write lock is acquired to make sure the cleanUp routine doesn't delete any VM's created by ongoing PVC requests.
 		defer cleanUpDummyVMLock.Lock()
 		err = diskmanagers.CleanUpDummyVMs(ctx, vmFolder, dc)
 		if err != nil {
-			glog.V(4).Infof("Unable to clean up dummy VM's in the kubernetes cluster: %q. err: %+v", vs.cfg.Global.WorkingDir, err)
+			glog.V(4).Infof("Unable to clean up dummy VM's in the kubernetes cluster: %q. err: %+v", vs.vsiArr[0].cfg.Global.WorkingDir, err)
 		}
 	}
 }

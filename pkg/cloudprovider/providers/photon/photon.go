@@ -306,6 +306,14 @@ func (pc *PCCloud) List(filter string) ([]k8stypes.NodeName, error) {
 	return nil, nil
 }
 
+func (pc *PCCloud) NodeRegistered(node *v1.Node) {
+
+}
+
+func (pc *PCCloud) NodeUnregistered(node *v1.Node) {
+
+}
+
 // NodeAddresses is an implementation of Instances.NodeAddresses.
 func (pc *PCCloud) NodeAddresses(nodeName k8stypes.NodeName) ([]v1.NodeAddress, error) {
 	nodeAddrs := []v1.NodeAddress{}

@@ -43,6 +43,7 @@ import (
 	computebeta "google.golang.org/api/compute/v0.beta"
 	compute "google.golang.org/api/compute/v1"
 	container "google.golang.org/api/container/v1"
+	"k8s.io/api/core/v1"
 )
 
 const (
@@ -349,6 +350,14 @@ func (gce *GCECloud) Initialize(clientBuilder controller.ControllerClientBuilder
 // LoadBalancer returns an implementation of LoadBalancer for Google Compute Engine.
 func (gce *GCECloud) LoadBalancer() (cloudprovider.LoadBalancer, bool) {
 	return gce, true
+}
+
+func (gce *GCECloud) NodeRegistered(node *v1.Node) {
+
+}
+
+func (gce *GCECloud) NodeUnregistered(node *v1.Node) {
+
 }
 
 // Instances returns an implementation of Instances for Google Compute Engine.

@@ -40,6 +40,7 @@ import (
 	"github.com/golang/glog"
 	"golang.org/x/crypto/pkcs12"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/api/core/v1"
 )
 
 const (
@@ -355,6 +356,14 @@ func (az *Cloud) Initialize(clientBuilder controller.ControllerClientBuilder) {}
 // LoadBalancer returns a balancer interface. Also returns true if the interface is supported, false otherwise.
 func (az *Cloud) LoadBalancer() (cloudprovider.LoadBalancer, bool) {
 	return az, true
+}
+
+func (az *Cloud) NodeRegistered(node *v1.Node) {
+
+}
+
+func (az *Cloud) NodeUnregistered(node *v1.Node) {
+
 }
 
 // Instances returns an instances interface. Also returns true if the interface is supported, false otherwise.

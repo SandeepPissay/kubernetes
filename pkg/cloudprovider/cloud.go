@@ -138,6 +138,9 @@ type Instances interface {
 	// CurrentNodeName returns the name of the node we are currently running on
 	// On most clouds (e.g. GCE) this is the hostname, so we provide the hostname
 	CurrentNodeName(hostname string) (types.NodeName, error)
+
+	NodeRegistered(nodes *v1.Node)
+	NodeUnregistered(nodes *v1.Node)
 }
 
 // Route is a representation of an advanced routing rule.

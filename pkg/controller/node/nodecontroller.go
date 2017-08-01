@@ -551,6 +551,10 @@ func (nc *NodeController) monitorNodeStatus() error {
 		recordNodeEvent(nc.recorder, added[i].Name, string(added[i].UID), v1.EventTypeNormal, "RegisteredNode", fmt.Sprintf("Registered Node %v in NodeController", added[i].Name))
 		nc.knownNodeSet[added[i].Name] = added[i]
 		nc.addPodEvictorForNewZone(added[i])
+		instance, isSupported := nc.cloud.Instances()
+		if isSupported {
+			instance.NodeRegistered(added[i])
+		}
 		if nc.useTaintBasedEvictions {
 			nc.markNodeAsHealthy(added[i])
 		} else {
@@ -562,6 +566,10 @@ func (nc *NodeController) monitorNodeStatus() error {
 		glog.V(1).Infof("NodeController observed a Node deletion: %v", deleted[i].Name)
 		recordNodeEvent(nc.recorder, deleted[i].Name, string(deleted[i].UID), v1.EventTypeNormal, "RemovingNode", fmt.Sprintf("Removing Node %v from NodeController", deleted[i].Name))
 		delete(nc.knownNodeSet, deleted[i].Name)
+		instance, isSupported := nc.cloud.Instances()
+		if isSupported {
+			instance.NodeRegistered(deleted[i])
+		}
 	}
 
 	zoneToNodeConditions := map[string][]*v1.NodeCondition{}

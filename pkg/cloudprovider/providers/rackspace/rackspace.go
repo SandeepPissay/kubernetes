@@ -376,6 +376,14 @@ func getAddressByName(api *gophercloud.ServiceClient, name string) (string, erro
 	return getAddressByServer(srv)
 }
 
+func (i *Instances) NodeRegistered(node *v1.Node) {
+
+}
+
+func (i *Instances) NodeUnregistered(node *v1.Node) {
+
+}
+
 func (i *Instances) NodeAddresses(nodeName types.NodeName) ([]v1.NodeAddress, error) {
 	glog.V(2).Infof("NodeAddresses(%v) called", nodeName)
 	serverName := mapNodeNameToServerName(nodeName)
