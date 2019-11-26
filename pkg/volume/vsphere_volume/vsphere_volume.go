@@ -86,7 +86,8 @@ func (plugin *vsphereVolumePlugin) CanSupport(spec *volume.Spec) bool {
 }
 
 func (plugin *vsphereVolumePlugin) IsMigratedToCSI() bool {
-	return false
+	return utilfeature.DefaultFeatureGate.Enabled(features.CSIMigration) &&
+		utilfeature.DefaultFeatureGate.Enabled(features.CSIMigrationVSphereVolume)
 }
 
 func (plugin *vsphereVolumePlugin) RequiresRemount() bool {
